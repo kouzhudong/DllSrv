@@ -1,0 +1,51 @@
+安装有两类：
+一类是自己独占一个svchost.exe.
+一类是与其他服务共享svchost.exe.
+
+
+--------------------------------------------------------------------------------------------------
+
+
+独占一个svchost.exe的安装步骤：
+1.HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SvcHost下一个多字节项。
+  名字自己可以随意定，如：test。后面会用到这个名字。
+  值是自己的服务的名字，如：SvcName。
+2.安装服务。
+  可用命令：sc create SvcName binPath= "%SystemRoot%\System32\svchost.exe -k test" type= share
+  注意这里的两处用到了上面的值，甚至和编程里的服务代码（服务名）要一致，建议。
+3.在HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\SvcName下新建Parameters项。
+4.在HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\SvcName\Parameters下新建扩充字符串。
+  名字叫ServiceDll，值是你DLL的全路径。可以不在系统目录，可以有中文。
+5.sc start SvcName。
+
+注释：可以把上面的步骤编写成bat文件或者inf文件。
+
+注意：
+1.检查路径的值是否正确。
+2.检查字符串的类型是否正确。甚至可以二进制编辑。如：双NULL结尾。
+3.字符串是否有多余的空格。特别是SvcHost下的那个，是以空格分割的。
+
+
+--------------------------------------------------------------------------------------------------
+
+
+与其他服务共享svchost.exe的安装步骤：
+详细设置见DllSrv.inf。
+
+操作步骤：
+1.编译工程，生产DLL。
+2.确保DllSrv.dll和DllSrv.inf在同一个目录。
+3.右键DllSrv.inf，选择安装。
+接下来启动名为DllSrv的服务吧！
+
+
+--------------------------------------------------------------------------------------------------
+
+
+后记：
+测试中总是发现找不到文件，当时以为是Windows10又有啥签名等安全检查呢？
+后来发现，还是文件路径和实际不服导致的。
+
+这个小东东，弄了几年才成功。
+
+这个对于隐藏（进程），搞病毒是不是有用？
