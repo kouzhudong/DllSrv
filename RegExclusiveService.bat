@@ -1,6 +1,8 @@
 echo "确保本文件和DllSrv.dll在同一目录"
 echo "确保当前目录和DllSrv.dll在同一目录 或者 直接双击本脚本运行"
 
+if not exist %cd%\DllSrv.dll exit
+
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Svchost" /v test /t REG_MULTI_SZ /d SvcName
 sc create SvcName binPath= "%SystemRoot%\System32\svchost.exe -k test" type= share
 reg add "HKLM\SYSTEM\CurrentControlSet\services\SvcName\Parameters"
